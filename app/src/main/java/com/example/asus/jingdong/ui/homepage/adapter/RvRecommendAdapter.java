@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.asus.jingdong.R;
@@ -30,7 +31,9 @@ public class RvRecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.list = list;
         inflater = LayoutInflater.from(context);
     }
-
+    public void setonItemClickListener(OnItemClickListener onItemClickListener){
+        this.onItemClickListener=onItemClickListener;
+    }
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,15 +43,20 @@ public class RvRecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        RecommendViewHolder recommendViewHolder = (RecommendViewHolder) holder;
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
+        RecommendViewHolder holder1 = (RecommendViewHolder) holder;
         AdBean.TuijianBean.ListBean listBean = list.get(position);
         String images = listBean.getImages();
         String[] split = images.split("\\|");
         String url = split.length == 0 ? images : split[0];
-        recommendViewHolder.iv.setImageURI(url);
-        recommendViewHolder.tv.setText(listBean.getTitle());
-
+        holder1.iv.setImageURI(url);
+        holder1.tv.setText(listBean.getTitle());
+        holder1.ll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(position);
+            }
+        });
     }
 
     @Override
@@ -60,9 +68,10 @@ public class RvRecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         private final SimpleDraweeView iv;
         private final TextView tv;
-
+        private final LinearLayout ll;
         public RecommendViewHolder(View itemView) {
             super(itemView);
+            ll = itemView.findViewById(R.id.ll);
             iv = itemView.findViewById(R.id.iv);
             tv = itemView.findViewById(R.id.tv);
         }

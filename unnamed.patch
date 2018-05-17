@@ -1,0 +1,104 @@
+Index: app/src/main/java/com/example/asus/jingdong/ui/homepage/FragmentHomePage.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/asus/jingdong/ui/homepage/FragmentHomePage.java	(revision 9c5c4821e793c8091818e7e9da6e1bad451aa658)
++++ app/src/main/java/com/example/asus/jingdong/ui/homepage/FragmentHomePage.java	(revision )
+@@ -18,6 +18,7 @@
+ import com.example.asus.jingdong.component.DaggerHttpComponent;
+ import com.example.asus.jingdong.inter.OnItemClickListener;
+ import com.example.asus.jingdong.module.HttpModule;
++import com.example.asus.jingdong.ui.Details.ListDetailsActivity;
+ import com.example.asus.jingdong.ui.Search.SearchActivity;
+ import com.example.asus.jingdong.ui.WebViewActivity;
+ import com.example.asus.jingdong.ui.base.BaseFragment;
+@@ -166,8 +167,23 @@
+ 
+             }
+         });
+-        RvRecommendAdapter rvRecommendAdapter = new RvRecommendAdapter(getActivity(), adBean.getTuijian().getList());
++
++        final List<AdBean.TuijianBean.ListBean> list = adBean.getTuijian().getList();
++        RvRecommendAdapter rvRecommendAdapter = new RvRecommendAdapter(getActivity(),list );
+         rvRecommend.setAdapter(rvRecommendAdapter);
++        rvRecommendAdapter.setonItemClickListener(new OnItemClickListener() {
++            @Override
++            public void onItemClick(int position) {
++                Intent intent = new Intent(getContext(), ListDetailsActivity.class);
++                intent.putExtra("pid",list.get(position).getPid());
++                startActivity(intent);
++            }
++
++            @Override
++            public void onLongItemClick(int position) {
++
++            }
++        });
+     }
+ 
+     @Override
+Index: app/src/main/java/com/example/asus/jingdong/ui/homepage/adapter/RvRecommendAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/asus/jingdong/ui/homepage/adapter/RvRecommendAdapter.java	(revision 9c5c4821e793c8091818e7e9da6e1bad451aa658)
++++ app/src/main/java/com/example/asus/jingdong/ui/homepage/adapter/RvRecommendAdapter.java	(revision )
+@@ -6,6 +6,7 @@
+ import android.view.LayoutInflater;
+ import android.view.View;
+ import android.view.ViewGroup;
++import android.widget.LinearLayout;
+ import android.widget.TextView;
+ 
+ import com.example.asus.jingdong.R;
+@@ -30,7 +31,9 @@
+         this.list = list;
+         inflater = LayoutInflater.from(context);
+     }
+-
++    public void setonItemClickListener(OnItemClickListener onItemClickListener){
++        this.onItemClickListener=onItemClickListener;
++    }
+     @NonNull
+     @Override
+     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+@@ -40,15 +43,20 @@
+     }
+ 
+     @Override
+-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+-        RecommendViewHolder recommendViewHolder = (RecommendViewHolder) holder;
++    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
++        RecommendViewHolder holder1 = (RecommendViewHolder) holder;
+         AdBean.TuijianBean.ListBean listBean = list.get(position);
+         String images = listBean.getImages();
+         String[] split = images.split("\\|");
+         String url = split.length == 0 ? images : split[0];
+-        recommendViewHolder.iv.setImageURI(url);
+-        recommendViewHolder.tv.setText(listBean.getTitle());
+-
++        holder1.iv.setImageURI(url);
++        holder1.tv.setText(listBean.getTitle());
++        holder1.ll.setOnClickListener(new View.OnClickListener() {
++            @Override
++            public void onClick(View v) {
++                onItemClickListener.onItemClick(position);
++            }
++        });
+     }
+ 
+     @Override
+@@ -60,9 +68,10 @@
+ 
+         private final SimpleDraweeView iv;
+         private final TextView tv;
+-
++        private final LinearLayout ll;
+         public RecommendViewHolder(View itemView) {
+             super(itemView);
++            ll = itemView.findViewById(R.id.ll);
+             iv = itemView.findViewById(R.id.iv);
+             tv = itemView.findViewById(R.id.tv);
+         }

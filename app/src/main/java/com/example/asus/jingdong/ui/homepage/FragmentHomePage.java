@@ -18,6 +18,7 @@ import com.example.asus.jingdong.bean.CatagoryBean;
 import com.example.asus.jingdong.component.DaggerHttpComponent;
 import com.example.asus.jingdong.inter.OnItemClickListener;
 import com.example.asus.jingdong.module.HttpModule;
+import com.example.asus.jingdong.ui.Details.ListDetailsActivity;
 import com.example.asus.jingdong.ui.Search.SearchActivity;
 import com.example.asus.jingdong.ui.WebViewActivity;
 import com.example.asus.jingdong.ui.base.BaseFragment;
@@ -166,8 +167,23 @@ public class FragmentHomePage extends BaseFragment<HomePagePresenter> implements
 
             }
         });
-        RvRecommendAdapter rvRecommendAdapter = new RvRecommendAdapter(getActivity(), adBean.getTuijian().getList());
+
+        final List<AdBean.TuijianBean.ListBean> list = adBean.getTuijian().getList();
+        RvRecommendAdapter rvRecommendAdapter = new RvRecommendAdapter(getActivity(),list );
         rvRecommend.setAdapter(rvRecommendAdapter);
+        rvRecommendAdapter.setonItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Intent intent = new Intent(getContext(), ListDetailsActivity.class);
+                intent.putExtra("pid",list.get(position).getPid());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onLongItemClick(int position) {
+
+            }
+        });
     }
 
     @Override
