@@ -1,6 +1,8 @@
 package com.example.asus.jingdong.ui.shopping.adapter;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,13 +11,16 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.asus.jingdong.R;
 import com.example.asus.jingdong.bean.GetCartsBean;
 import com.example.asus.jingdong.bean.SellerBean;
+import com.example.asus.jingdong.ui.shopping.presenter.GetCartsPresenter;
 import com.example.asus.jingdong.utils.AddSubView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,13 +32,29 @@ public class ElvShopcartAdapter extends BaseExpandableListAdapter {
     private List<SellerBean> groupList;
     private List<List<GetCartsBean.DataBean.ListBean>> childList;
     private LayoutInflater inflater;
+    private GetCartsPresenter getCartsPresenter;
+    private final String uid;
+    private final String token;
+    private int productIndex;
+    private int groupPosition;
+    private boolean checked;
+    private static final int GETCARTS = 0;//查询购物车
+    private static final int UPDATE_PRODUCT = 1; //更新商品
+    private static final int UPDATE_SELLER = 2; //更新卖家
 
-    public ElvShopcartAdapter(Context context, List<SellerBean> groupList, List<List<GetCartsBean.DataBean.ListBean>> childList) {
+    private static int state = GETCARTS;
+    private boolean allSelected;
+
+    public ElvShopcartAdapter(Context context, List<SellerBean> groupList, List<List<GetCartsBean.DataBean.ListBean>> childList, GetCartsPresenter getCartsPresenter) {
         this.context = context;
         this.groupList = groupList;
         this.childList = childList;
+        this.getCartsPresenter=getCartsPresenter;
         inflater = LayoutInflater.from(context);
 
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        uid = sharedPreferences.getString("uid", "-1");
+        token = sharedPreferences.getString("token", "");
     }
 
     @Override
@@ -72,7 +93,7 @@ public class ElvShopcartAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         final GroupViewHolder groupViewHolder;
         if (convertView == null) {
             groupViewHolder = new GroupViewHolder();
@@ -88,12 +109,30 @@ public class ElvShopcartAdapter extends BaseExpandableListAdapter {
         SellerBean sellerBean = groupList.get(groupPosition);
         groupViewHolder.tvSeller.setText(sellerBean.getSellerName());
         groupViewHolder.cbSeller.setChecked(sellerBean.isSelected());
+        //给商家checkbox设置点击事件
+        groupViewHolder.cbSeller.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //设置当前的更新状态
+                state = UPDATE_PRODUCT;
+                //显示进度条
+               // progressDialog.show();
+                //默认从第一个商品开始更新购物车状态
+                productIndex = 0;
+                //全局记录一下当前更新的商家
+                ElvShopcartAdapter.this.groupPosition = groupPosition;
+                //该商家是否选中
+                checked = groupViewHolder.cbSeller.isChecked();
+                //更新商家下的商品状态
+                updateProductInSeller();
+            }
 
+        });
         return convertView;
     }
 
     @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+    public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         final ChildViewHolder childViewHolder;
         if (convertView == null) {
             childViewHolder = new ChildViewHolder();
@@ -116,7 +155,84 @@ public class ElvShopcartAdapter extends BaseExpandableListAdapter {
 
         Glide.with(context).load(listBean.getImages().split("\\|")[0]).into(childViewHolder.iv);
         childViewHolder.addSubView.setNum(listBean.getNum() + "");
+        //给二级列表的checkbox设置点击事件
+        childViewHolder.cbProduct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                state = GETCARTS;
+                //显示进度条
+                ElvShopcartAdapter.this.groupPosition = groupPosition;
+                //调用更新购物车接口，改变购物车的状态
+                //获取卖家id
+                String sellerid = groupList.get(groupPosition).getSellerid();
+                //获取pid
+                String pid = listBean.getPid() + "";
+                //是否选中
+                boolean childChecked = childViewHolder.cbProduct.isChecked();
 
+                getCartsPresenter.getupdatePresenter(uid, sellerid, pid, "1", childChecked ? "1" : "0", token);
+            }
+        });
+
+        //给加号设置点击事件
+        childViewHolder.addSubView.setAddOnclickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                state = GETCARTS;
+                //获取sellerId
+                String sellerid = groupList.get(groupPosition).getSellerid();
+                //获取pid
+                int pid = listBean.getPid();
+                //获取数量
+                int num = listBean.getNum();
+                num += 1;
+                //是否选中
+                String isChecked = childViewHolder.cbProduct.isChecked() ? "1" : "0";
+                //调用更新购物车的接口即可
+                getCartsPresenter.getupdatePresenter(uid, sellerid, pid + "", num + "", isChecked, token);
+
+            }
+        });
+
+        //给减号设置点击事件
+        childViewHolder.addSubView.setSubOnclickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                state = GETCARTS;
+                //获取当前商品的数量
+                int num = listBean.getNum();
+                if (num <= 1) {
+                    Toast.makeText(context, "数量不能小于1", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                num -= 1;
+
+                //获取sellerId
+                String sellerid = groupList.get(groupPosition).getSellerid();
+                //获取pid
+                int pid = listBean.getPid();
+                //是否选中
+                String isChecked = childViewHolder.cbProduct.isChecked() ? "1" : "0";
+                //更新购物车
+                getCartsPresenter.getupdatePresenter(uid, sellerid, pid + "", num + "", isChecked, token);
+            }
+        });
+
+        //给删除设置点击事件
+        childViewHolder.tvDel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                state = GETCARTS;
+                //获取pid
+                int pid = listBean.getPid();
+                //删除购物车里的选项
+                getCartsPresenter.getDeletePresenter(uid, pid + "", token);
+
+            }
+        });
         return convertView;
     }
 
@@ -137,6 +253,79 @@ public class ElvShopcartAdapter extends BaseExpandableListAdapter {
         TextView tvDel;
         AddSubView addSubView;
     }
+    //删除成功回调接口
+    public void delSuccess() {
+        getCartsPresenter.getGetCartsPresenter(uid, token);
+    }
+    //更新购物车成功回调的方法
+
+    public void updataSuccess() {
+        switch (state) {
+            case GETCARTS:
+                //更新成功以后调用查询购物车接口
+                productIndex = 0;
+                groupPosition = 0;
+                getCartsPresenter.getGetCartsPresenter(uid, token);
+                break;
+            case UPDATE_PRODUCT:
+                //更新成功一个商品以后，再接着更新该商家下面的其它商品，直到没有商品为止
+                productIndex++;
+                //下标是否越界
+                if (productIndex < childList.get(groupPosition).size()) {
+                    //可以继续跟新商品
+                    updateProductInSeller();
+                } else {
+                    //商品已经全部更新完成，请查询购物车
+                    state = GETCARTS;
+                    updataSuccess();
+                }
+                break;
+            case UPDATE_SELLER:
+                //遍历所有商家下的商品，并更新状态
+                productIndex++;
+                //下标是否越界
+                if (productIndex < childList.get(groupPosition).size()) {
+                    //可以继续跟新商品
+                    updateProductInSeller(allSelected);
+                } else {
+                    //商品已经全部更新完成，请查询购物车
+                    productIndex = 0;
+                    groupPosition++;
+                    if (groupPosition < groupList.size()) {
+                        //可以继续跟新商品
+                        updateProductInSeller(allSelected);
+                    } else {
+                        //商品已经全部更新完成，请查询购物车
+                        state = GETCARTS;
+                        updataSuccess();
+                    }
+                }
+                break;
+        }
+
+    }
+    private void updateProductInSeller() {
+        //获取SellerId
+        SellerBean sellerBean = groupList.get(groupPosition);
+        String sellerid = sellerBean.getSellerid();
+        //获取pid
+        GetCartsBean.DataBean.ListBean listBean = childList.get(groupPosition).get(productIndex);
+        int num = listBean.getNum();
+        int pid = listBean.getPid();
+        getCartsPresenter.getupdatePresenter(uid, sellerid, pid + "", num + "", checked ? "1" : "0", token);
+    }
+
+    private void updateProductInSeller(boolean bool) {
+        //获取SellerId
+        SellerBean sellerBean = groupList.get(groupPosition);
+        String sellerid = sellerBean.getSellerid();
+        //获取pid
+        GetCartsBean.DataBean.ListBean listBean = childList.get(groupPosition).get(productIndex);
+        int pid = listBean.getPid();
+        int num = listBean.getNum();
+        getCartsPresenter.getupdatePresenter(uid, sellerid, pid + "", num + "", bool ? "1" : "0", token);
+    }
+
 
     //计算数量和价钱
 
@@ -155,6 +344,42 @@ public class ElvShopcartAdapter extends BaseExpandableListAdapter {
             }
         }
         return new String[]{sum + "", num + ""};
+    }
+    public void changeAllState(boolean bool) {
+        this.allSelected = bool;
+        state = UPDATE_SELLER;
+        //遍历商家下的商品，修改状态
+        updateProductInSeller(bool);
+
+    }
+    //获取getGroupList的内容
+    public List<SellerBean> getGroupList() {
+        //先创建一个集合
+        List<SellerBean> gList = new ArrayList<>();
+        //遍历原先的groupList
+        for (int i = 0; i < groupList.size(); i++) {
+            if (groupList.get(i).isSelected()) {
+                gList.add(groupList.get(i));
+            }
+        }
+        return gList;
+    }
+    //获取二级列表内容
+    public List<List<GetCartsBean.DataBean.ListBean>> getchildList() {
+        List<List<GetCartsBean.DataBean.ListBean>> cList = new ArrayList<>();
+        for (int i = 0; i < groupList.size(); i++) {
+            List<GetCartsBean.DataBean.ListBean> l = new ArrayList<>();
+            for (int j = 0; j < childList.get(i).size(); j++) {
+                if (childList.get(i).get(j).getSelected() == 1) {
+                    l.add(childList.get(i).get(j));
+                }
+            }
+            if (l.size()>0){
+                cList.add(l);
+            }
+
+        }
+        return cList;
     }
 
 }

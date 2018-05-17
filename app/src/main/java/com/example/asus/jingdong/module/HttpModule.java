@@ -2,15 +2,25 @@ package com.example.asus.jingdong.module;
 
 import com.example.asus.jingdong.net.AdApi;
 import com.example.asus.jingdong.net.AdApiService;
+import com.example.asus.jingdong.net.AddAddrApi;
+import com.example.asus.jingdong.net.AddAddrApiService;
 import com.example.asus.jingdong.net.AddCartApi;
 import com.example.asus.jingdong.net.AddCartApiService;
+import com.example.asus.jingdong.net.AddrsApi;
+import com.example.asus.jingdong.net.AddrsApiService;
 import com.example.asus.jingdong.net.Api;
 import com.example.asus.jingdong.net.CatagoryApi;
 import com.example.asus.jingdong.net.CatagoryApiService;
+import com.example.asus.jingdong.net.CreateOrderApi;
+import com.example.asus.jingdong.net.CreateOrderApiService;
 import com.example.asus.jingdong.net.DatailsApi;
 import com.example.asus.jingdong.net.DatailsApiService;
+import com.example.asus.jingdong.net.DeleteCartApi;
+import com.example.asus.jingdong.net.DeleteCartApiServlce;
 import com.example.asus.jingdong.net.GetCartsApi;
 import com.example.asus.jingdong.net.GetCartsApiServive;
+import com.example.asus.jingdong.net.GetOrdersApi;
+import com.example.asus.jingdong.net.GetOrdersApiService;
 import com.example.asus.jingdong.net.LoginApi;
 import com.example.asus.jingdong.net.LoginApiService;
 import com.example.asus.jingdong.net.ProductCatagoryApi;
@@ -21,6 +31,8 @@ import com.example.asus.jingdong.net.RegisterApi;
 import com.example.asus.jingdong.net.RegisterApiService;
 import com.example.asus.jingdong.net.SearchApi;
 import com.example.asus.jingdong.net.SearchApiService;
+import com.example.asus.jingdong.net.updateCartsApi;
+import com.example.asus.jingdong.net.updateCartsApiService;
 
 import java.util.concurrent.TimeUnit;
 
@@ -157,5 +169,75 @@ public class HttpModule {
         GetCartsApiServive getCartsApiServive = retrofit.create(GetCartsApiServive.class);
         return GetCartsApi.getGetCartsApi(getCartsApiServive);
 
+    }
+    @Provides
+    updateCartsApi provideupdateCartsApi(OkHttpClient.Builder builder){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASEURL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(builder.build())
+                .build();
+        updateCartsApiService updateCartsApiService = retrofit.create(updateCartsApiService.class);
+        return updateCartsApi.getupdateCartsApi(updateCartsApiService);
+
+    }
+    @Provides
+    DeleteCartApi provideDeleteCartApi(OkHttpClient.Builder builder){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASEURL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(builder.build())
+                .build();
+        DeleteCartApiServlce deleteCartApiServive = retrofit.create(DeleteCartApiServlce.class);
+        return DeleteCartApi.getDeleteCartApi(deleteCartApiServive);
+
+    }
+
+
+    @Provides
+    CreateOrderApi provideCreateOrderApi(OkHttpClient.Builder builder){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASEURL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(builder.build())
+                .build();
+        CreateOrderApiService createOrderApiService = retrofit.create(CreateOrderApiService.class);
+        return CreateOrderApi.getCreateOrderApi(createOrderApiService);
+    }
+    @Provides
+    AddrsApi provideAddrsApi(OkHttpClient.Builder builder){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASEURL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(builder.build())
+                .build();
+        AddrsApiService addrsApiService = retrofit.create(AddrsApiService.class);
+        return AddrsApi.getAddrsApi(addrsApiService);
+    }
+    @Provides
+    AddAddrApi provideAddAddrApi(OkHttpClient.Builder builder){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASEURL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(builder.build())
+                .build();
+        AddAddrApiService addAddrApiService = retrofit.create(AddAddrApiService.class);
+        return AddAddrApi.getAddAddrApi(addAddrApiService);
+    }
+    @Provides
+    GetOrdersApi provideGetOrdersApi(OkHttpClient.Builder builder){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASEURL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(builder.build())
+                .build();
+        GetOrdersApiService getOrdersApiService = retrofit.create(GetOrdersApiService.class);
+        return GetOrdersApi.getGetOrdersApi(getOrdersApiService);
     }
 }

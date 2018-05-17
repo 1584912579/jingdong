@@ -13,9 +13,12 @@ import java.util.List;
 public interface GetCartsCintract {
     interface View extends BaseContract.BaseView{
         void getGetCartsSuccess(List<SellerBean> groupList,List<List<GetCartsBean.DataBean.ListBean>> childList);
-
+        void getupdateCartsSuccess();
+        void getDeleteCartsSuccess();
     }
     interface Presenter extends BaseContract.BasePresenter<View>{
-        void getPresenter(String uid,String token);
+        void getGetCartsPresenter(String uid,String token);
+        void getupdatePresenter(String uid, String sellerid, String pid, String num, String selected, String token);
+        void getDeletePresenter(String uid, String pid, String token);
     }
 }

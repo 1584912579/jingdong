@@ -50,15 +50,15 @@ public class ShopCartActivity extends BaseActivity<GetCartsPresenter> implements
         mCbAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (adapter != null) {
-//                    adapter.changeAllState(mCbAll.isChecked());
-//                }
+                if (adapter != null) {
+                    adapter.changeAllState(mCbAll.isChecked());
+                }
             }
         });
         SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
         String uid = sharedPreferences.getString("uid", "-1");
         String token = sharedPreferences.getString("token", "");
-        mPresenter.getPresenter(uid,token);
+        mPresenter.getGetCartsPresenter(uid,token);
 
     }
 
@@ -66,10 +66,10 @@ public class ShopCartActivity extends BaseActivity<GetCartsPresenter> implements
 
     @Override
     public void getGetCartsSuccess(List<SellerBean> groupList, List<List<GetCartsBean.DataBean.ListBean>> childList) {
-//判断所有商家是否全部选中
+        //判断所有商家是否全部选中
         mCbAll.setChecked(isSellerAddSelected(groupList));
         //创建适配器
-        adapter = new ElvShopcartAdapter(ShopCartActivity.this, groupList, childList );
+        adapter = new ElvShopcartAdapter(ShopCartActivity.this, groupList, childList,mPresenter );
         mElvvv.setAdapter(adapter);
         //获取数量和总价
         String[] strings = adapter.computeMoneyAndNum();
@@ -91,4 +91,18 @@ public class ShopCartActivity extends BaseActivity<GetCartsPresenter> implements
         }
         return true;
     }
+    @Override
+    public void getupdateCartsSuccess() {
+        if (adapter!=null){
+            adapter.updataSuccess();
+        }
+    }
+
+    @Override
+    public void getDeleteCartsSuccess() {
+        if (adapter!=null){
+            adapter.delSuccess();
+        }
+    }
+
 }

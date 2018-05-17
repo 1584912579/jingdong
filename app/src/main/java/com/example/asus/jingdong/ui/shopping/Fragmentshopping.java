@@ -1,6 +1,7 @@
 package com.example.asus.jingdong.ui.shopping;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.CheckBox;
@@ -10,12 +11,17 @@ import android.widget.TextView;
 import com.example.asus.jingdong.R;
 import com.example.asus.jingdong.bean.GetCartsBean;
 import com.example.asus.jingdong.bean.SellerBean;
+import com.example.asus.jingdong.bean.eventbus.MessageEvent;
 import com.example.asus.jingdong.component.DaggerHttpComponent;
 import com.example.asus.jingdong.module.HttpModule;
+import com.example.asus.jingdong.ui.MakeSureOrder.MakeSureOrderActivity;
+import com.example.asus.jingdong.ui.ShopCart.ShopCartActivity;
 import com.example.asus.jingdong.ui.base.BaseFragment;
 import com.example.asus.jingdong.ui.shopping.adapter.ElvShopcartAdapter;
 import com.example.asus.jingdong.ui.shopping.contract.GetCartsCintract;
 import com.example.asus.jingdong.ui.shopping.presenter.GetCartsPresenter;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -52,15 +58,30 @@ public class Fragmentshopping extends BaseFragment<GetCartsPresenter> implements
         mCbAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (adapter != null) {
-//                    adapter.changeAllState(mCbAll.isChecked());
-//                }
+                if (adapter != null) {
+                    adapter.changeAllState(mCbAll.isChecked());
+                }
             }
         });
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("user", Context.MODE_PRIVATE);
         String uid = sharedPreferences.getString("uid", "-1");
         String token = sharedPreferences.getString("token", "");
-        mPresenter.getPresenter(uid,token);
+        mPresenter.getGetCartsPresenter(uid,token);
+        //点击跳转结算页
+        mTvTotal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MakeSureOrderActivity.class);
+                startActivity(intent);
+                //把用户选中的商品传过去
+                List<SellerBean> gList = adapter.getGroupList();
+                List<List<GetCartsBean.DataBean.ListBean>> cList = adapter.getchildList();
+                MessageEvent messageEvent = new MessageEvent();
+                messageEvent.setcList(cList);
+                messageEvent.setgList(gList);
+                EventBus.getDefault().postSticky(messageEvent);
+            }
+        });
     }
 
     @Override
@@ -68,7 +89,7 @@ public class Fragmentshopping extends BaseFragment<GetCartsPresenter> implements
         //判断所有商家是否全部选中
         mCbAll.setChecked(isSellerAddSelected(groupList));
         //创建适配器
-        adapter = new ElvShopcartAdapter(getContext(), groupList, childList );
+        adapter = new ElvShopcartAdapter(getContext(), groupList, childList,mPresenter );
         mElvvv.setAdapter(adapter);
         //获取数量和总价
         String[] strings = adapter.computeMoneyAndNum();
@@ -91,4 +112,18 @@ public class Fragmentshopping extends BaseFragment<GetCartsPresenter> implements
         }
         return true;
     }
+    @Override
+    public void getupdateCartsSuccess() {
+        if (adapter!=null){
+            adapter.updataSuccess();
+        }
+    }
+
+    @Override
+    public void getDeleteCartsSuccess() {
+        if (adapter!=null){
+            adapter.delSuccess();
+        }
+    }
+
 }

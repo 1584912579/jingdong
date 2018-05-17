@@ -1,8 +1,11 @@
 package com.example.asus.jingdong.ui.shopping.presenter;
 
+import com.example.asus.jingdong.bean.BaseBean;
 import com.example.asus.jingdong.bean.GetCartsBean;
 import com.example.asus.jingdong.bean.SellerBean;
+import com.example.asus.jingdong.net.DeleteCartApi;
 import com.example.asus.jingdong.net.GetCartsApi;
+import com.example.asus.jingdong.net.updateCartsApi;
 import com.example.asus.jingdong.ui.base.BasePresenter;
 import com.example.asus.jingdong.ui.shopping.contract.GetCartsCintract;
 
@@ -11,7 +14,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -22,13 +27,20 @@ import io.reactivex.schedulers.Schedulers;
 
 public class GetCartsPresenter extends BasePresenter<GetCartsCintract.View> implements GetCartsCintract.Presenter {
     private GetCartsApi getCartsApi;
+    private updateCartsApi updateCartsApi;
+    private DeleteCartApi deleteCartApi;
     @Inject
-    public GetCartsPresenter(GetCartsApi getCartsApi) {
+    public GetCartsPresenter(GetCartsApi getCartsApi, com.example.asus.jingdong.net.updateCartsApi updateCartsApi, DeleteCartApi deleteCartApi) {
         this.getCartsApi = getCartsApi;
+        this.updateCartsApi = updateCartsApi;
+        this.deleteCartApi = deleteCartApi;
     }
 
+
+
+
     @Override
-    public void getPresenter(String uid, String token) {
+    public void getGetCartsPresenter(String uid, String token) {
         getCartsApi.GetCartsApi(uid,token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -66,6 +78,48 @@ public class GetCartsPresenter extends BasePresenter<GetCartsCintract.View> impl
 
 
     }
+
+    @Override
+    public void getupdatePresenter(String uid, String sellerid, String pid, String num, String selected, String token) {
+        updateCartsApi.getupdateCartsApi(uid, sellerid, pid, num, selected, token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Function<BaseBean, String>() {
+                    @Override
+                    public String apply(BaseBean baseBean) throws Exception {
+                        return baseBean.getMsg();
+                    }
+                }).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                if (mView != null) {
+                    mView.getupdateCartsSuccess();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void getDeletePresenter(String uid, String pid, String token) {
+        deleteCartApi.getDeleteCartApi(uid,pid,token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Function<BaseBean, String>() {
+                    @Override
+                    public String apply(BaseBean baseBean) throws Exception {
+                        return baseBean.getMsg();
+                    }
+                }).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                if (mView != null) {
+                    mView.getDeleteCartsSuccess();
+                }
+            }
+        });
+
+    }
+
     private boolean isSellerProductAllSelect(GetCartsBean.DataBean dataBean) {
         //获取该商家下面的所有商品
         List<GetCartsBean.DataBean.ListBean> list = dataBean.getList();

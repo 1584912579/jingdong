@@ -2,6 +2,8 @@ package com.example.asus.jingdong.component;
 
 import com.example.asus.jingdong.module.HttpModule;
 import com.example.asus.jingdong.ui.Details.ListDetailsActivity;
+import com.example.asus.jingdong.ui.MakeSureOrder.AddNewAddrActivity;
+import com.example.asus.jingdong.ui.MakeSureOrder.MakeSureOrderActivity;
 import com.example.asus.jingdong.ui.Search.SearchTouActivity;
 import com.example.asus.jingdong.ui.ShopCart.ShopCartActivity;
 import com.example.asus.jingdong.ui.SpLb.ListActivity;
@@ -29,4 +31,6 @@ public interface HttpComponent {
     void inject(SearchTouActivity searchTouActivity);
     void inject(Fragmentshopping fragmentshopping);
     void inject(ShopCartActivity shopCartActivity);
+    void inject(MakeSureOrderActivity makeSureOrderActivity);
+    void inject(AddNewAddrActivity addNewAddrActivity);
 }
