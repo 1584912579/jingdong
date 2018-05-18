@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     >
-
     <!--标题-->
     <RelativeLayout
         android:id="@+id/detai_relative"

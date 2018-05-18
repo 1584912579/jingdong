@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -65,9 +66,15 @@ public class MakeSureOrderActivity extends BaseActivity<MakeSureOrderPresenter> 
         String token = sharedPreferences.getString("token", "");
 
         if (mPresenter != null) {
-
             mPresenter.getAddrs(uid, token);
         }
+        //点击改变收货人和地址
+        mRelativeAddr01.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN,sticky  = true)

@@ -1,6 +1,7 @@
 package com.example.asus.jingdong.ui.ShopCart;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -11,12 +12,16 @@ import android.widget.TextView;
 import com.example.asus.jingdong.R;
 import com.example.asus.jingdong.bean.GetCartsBean;
 import com.example.asus.jingdong.bean.SellerBean;
+import com.example.asus.jingdong.bean.eventbus.MessageEvent;
 import com.example.asus.jingdong.component.DaggerHttpComponent;
 import com.example.asus.jingdong.module.HttpModule;
+import com.example.asus.jingdong.ui.MakeSureOrder.MakeSureOrderActivity;
 import com.example.asus.jingdong.ui.base.BaseActivity;
 import com.example.asus.jingdong.ui.shopping.adapter.ElvShopcartAdapter;
 import com.example.asus.jingdong.ui.shopping.contract.GetCartsCintract;
 import com.example.asus.jingdong.ui.shopping.presenter.GetCartsPresenter;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -59,7 +64,21 @@ public class ShopCartActivity extends BaseActivity<GetCartsPresenter> implements
         String uid = sharedPreferences.getString("uid", "-1");
         String token = sharedPreferences.getString("token", "");
         mPresenter.getGetCartsPresenter(uid,token);
-
+        //点击跳转结算页
+        mTvTotal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ShopCartActivity.this, MakeSureOrderActivity.class);
+                startActivity(intent);
+                //把用户选中的商品传过去
+                List<SellerBean> gList = adapter.getGroupList();
+                List<List<GetCartsBean.DataBean.ListBean>> cList = adapter.getchildList();
+                MessageEvent messageEvent = new MessageEvent();
+                messageEvent.setcList(cList);
+                messageEvent.setgList(gList);
+                EventBus.getDefault().postSticky(messageEvent);
+            }
+        });
     }
 
 
