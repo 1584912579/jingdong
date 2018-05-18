@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -42,7 +43,10 @@ public class AddNewAddrActivity extends BaseActivity<AddNewAddrPresenter> implem
         String addr = mAddr.getText().toString();
         String mobile = mMobile.getText().toString();
         String name = mName.getText().toString();
-        mPresenter.getAddaddr(uid,addr,mobile,name,token);
+        if(!TextUtils.isEmpty(addr)&&!TextUtils.isEmpty(addr)&&!TextUtils.isEmpty(addr)){
+            mPresenter.getAddaddr(uid,addr,mobile,name,token);
+        }
+
     }
 
     @Override
