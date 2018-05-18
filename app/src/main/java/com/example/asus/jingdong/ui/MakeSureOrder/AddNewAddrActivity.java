@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -17,35 +18,52 @@ import com.example.asus.jingdong.ui.base.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class AddNewAddrActivity extends BaseActivity<AddNewAddrPresenter> implements AddNewAddrContract.View {
 
-    @BindView(R.id.addr)
-    EditText mAddr;
-    @BindView(R.id.mobile)
-    EditText mMobile;
-    @BindView(R.id.name)
-    EditText mName;
-    @BindView(R.id.btn_tj)
-    Button mBtnTj;
+//    @BindView(R.id.addr)
+    private EditText mAddr;
+   // @BindView(R.id.mobile)
+    private EditText mMobile;
+   // @BindView(R.id.name)
+    private EditText mName;
+   // @BindView(R.id.btn_tj)
+    private Button mBtnTj;
+    private String uid;
+    private String token;
+    private String addr;
+    private String mobile;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_addr);
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
+        mAddr = findViewById(R.id.addr);
+        mMobile = findViewById(R.id.mobile);
+        mName = findViewById(R.id.name);
+        mBtnTj = findViewById(R.id.btn_tj);
         //添加收货地址
         //先去获取常用收货地址列表
         SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
-        String uid = sharedPreferences.getString("uid", "-1");
-        String token = sharedPreferences.getString("token", "");
-        String addr = mAddr.getText().toString();
-        String mobile = mMobile.getText().toString();
-        String name = mName.getText().toString();
-        if(!TextUtils.isEmpty(addr)&&!TextUtils.isEmpty(addr)&&!TextUtils.isEmpty(addr)){
-            mPresenter.getAddaddr(uid,addr,mobile,name,token);
-        }
+        uid = sharedPreferences.getString("uid", "-1");
+        token = sharedPreferences.getString("token", "");
+
+        mBtnTj.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addr = mAddr.getText().toString();
+                mobile = mMobile.getText().toString();
+                name = mName.getText().toString();
+                if(!TextUtils.isEmpty(addr)&&!TextUtils.isEmpty(addr)&&!TextUtils.isEmpty(addr)){
+                    mPresenter.getAddaddr(uid, addr, mobile, name, token);
+
+                }
+
+            }
+        });
+
 
     }
 
@@ -64,6 +82,8 @@ public class AddNewAddrActivity extends BaseActivity<AddNewAddrPresenter> implem
     @Override
     public void getaddaddrSuccess(String msg) {
         Toast.makeText(AddNewAddrActivity.this,msg,Toast.LENGTH_SHORT).show();
+        this.finish();
+
     }
 
 
