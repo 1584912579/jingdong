@@ -16,10 +16,12 @@ import com.example.asus.jingdong.R;
 import com.example.asus.jingdong.bean.UserBean;
 import com.example.asus.jingdong.component.DaggerHttpComponent;
 import com.example.asus.jingdong.module.HttpModule;
+import com.example.asus.jingdong.ui.MainActivity;
 import com.example.asus.jingdong.ui.base.BaseActivity;
 import com.example.asus.jingdong.ui.login.contract.LoginContract;
 import com.example.asus.jingdong.ui.login.presenter.LoginPresenter;
 import com.example.asus.jingdong.ui.register.RegisterActivity;
+import com.example.asus.jingdong.ui.showActivity;
 
 public class LoginActivity extends BaseActivity<LoginPresenter> implements LoginContract.View {
     private RelativeLayout mLoginTitleRelative;
@@ -109,6 +111,8 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         editor.putString("token", userBean.getData().getToken() + "");
         Log.i("uuuu",userBean.getData().getToken()+"");
         editor.commit();
+        Intent intent = new Intent(this, showActivity.class);
+        startActivity(intent);
         //关闭当前页面
         this.finish();
     }

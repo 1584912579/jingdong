@@ -41,7 +41,6 @@ public class ElvShopcartAdapter extends BaseExpandableListAdapter {
     private static final int GETCARTS = 0;//查询购物车
     private static final int UPDATE_PRODUCT = 1; //更新商品
     private static final int UPDATE_SELLER = 2; //更新卖家
-
     private static int state = GETCARTS;
     private boolean allSelected;
 
@@ -115,8 +114,6 @@ public class ElvShopcartAdapter extends BaseExpandableListAdapter {
             public void onClick(View v) {
                 //设置当前的更新状态
                 state = UPDATE_PRODUCT;
-                //显示进度条
-               // progressDialog.show();
                 //默认从第一个商品开始更新购物车状态
                 productIndex = 0;
                 //全局记录一下当前更新的商家

@@ -157,8 +157,9 @@ public class FragmentHomePage extends BaseFragment<HomePagePresenter> implements
                 //跳转显示详情
                 //获取地址
                 String detailUrl = adBean.getMiaosha().getList().get(position).getDetailUrl();
-                Intent intent = new Intent(getContext(), WebViewActivity.class);
-                intent.putExtra("detailUrl", detailUrl);
+                Intent intent = new Intent(getContext(), ListDetailsActivity.class);
+                //intent.putExtra("detailUrl", detailUrl);
+                intent.putExtra("pid",adBean.getMiaosha().getList().get(position).getPid());
                 startActivity(intent);
             }
 

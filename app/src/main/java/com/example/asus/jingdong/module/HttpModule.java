@@ -31,6 +31,8 @@ import com.example.asus.jingdong.net.RegisterApi;
 import com.example.asus.jingdong.net.RegisterApiService;
 import com.example.asus.jingdong.net.SearchApi;
 import com.example.asus.jingdong.net.SearchApiService;
+import com.example.asus.jingdong.net.UpdateHeaderApi;
+import com.example.asus.jingdong.net.UpdateHeaderApiService;
 import com.example.asus.jingdong.net.updateCartsApi;
 import com.example.asus.jingdong.net.updateCartsApiService;
 
@@ -239,5 +241,16 @@ public class HttpModule {
                 .build();
         GetOrdersApiService getOrdersApiService = retrofit.create(GetOrdersApiService.class);
         return GetOrdersApi.getGetOrdersApi(getOrdersApiService);
+    }
+    @Provides
+    UpdateHeaderApi provideUpdateHeaderApi(OkHttpClient.Builder builder){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASEURL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(builder.build())
+                .build();
+        UpdateHeaderApiService updateHeaderApiService = retrofit.create(UpdateHeaderApiService.class);
+        return UpdateHeaderApi.getUpdateHeaderApi(updateHeaderApiService);
     }
 }

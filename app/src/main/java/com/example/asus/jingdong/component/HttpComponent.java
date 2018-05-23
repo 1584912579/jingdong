@@ -10,6 +10,7 @@ import com.example.asus.jingdong.ui.SpLb.ListActivity;
 import com.example.asus.jingdong.ui.dlassify.Fragmentdlassify;
 import com.example.asus.jingdong.ui.homepage.FragmentHomePage;
 import com.example.asus.jingdong.ui.login.LoginActivity;
+import com.example.asus.jingdong.ui.mine.UserInfoActivity;
 import com.example.asus.jingdong.ui.register.RegisterActivity;
 import com.example.asus.jingdong.ui.shopping.Fragmentshopping;
 
@@ -33,4 +34,5 @@ public interface HttpComponent {
     void inject(ShopCartActivity shopCartActivity);
     void inject(MakeSureOrderActivity makeSureOrderActivity);
     void inject(AddNewAddrActivity addNewAddrActivity);
+    void inject(UserInfoActivity userInfoActivity);
 }

@@ -6,15 +6,18 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.example.asus.jingdong.R;
 import com.example.asus.jingdong.adapter.MyFragmentadapter;
+import com.example.asus.jingdong.ui.base.BaseActivity;
 import com.example.asus.jingdong.ui.dlassify.Fragmentdlassify;
 import com.example.asus.jingdong.ui.find.Fragmentfind;
 import com.example.asus.jingdong.ui.homepage.FragmentHomePage;
@@ -24,22 +27,91 @@ import com.example.asus.jingdong.ui.shopping.Fragmentshopping;
 import java.util.ArrayList;
 import java.util.List;
 
-public class showActivity extends AppCompatActivity {
+public class showActivity extends BaseActivity {
 
     private ViewPager viewPager;
     private RadioGroup rg;
     private List<Fragment> list;
     private ViewPager mViewpager;
     private RadioGroup mRg;
+    private FragmentManager fragmentManager;
+    private int currentIndex = 1;
+    private RadioButton mRbHomepage;
+    private FragmentHomePage fragmentHomePage;
+    private Fragmentdlassify fragmentdlassify;
+    private Fragmentfind fragmentfind;
+    private Fragmentshopping fragmentshopping;
+    private Fragmentmine fragmentmine;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show);
+//        setContentView(R.layout.activity_show);
         initView();
         //fullScreen(this);
+//        one();
+        fragmentManager = getSupportFragmentManager();
+        fragmentHomePage = new FragmentHomePage();
+        fragmentdlassify = new Fragmentdlassify();
+        fragmentfind = new Fragmentfind();
+        fragmentshopping = new Fragmentshopping();
+        fragmentmine = new Fragmentmine();
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.flont, fragmentHomePage)
+                .commit();
+        mRbHomepage.setChecked(true);
+        //设置点击事件
+        setLisenter();
 
 
+    }
+    private void setLisenter() {
+        mRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.rb1:
+                        //首页
+                        if (currentIndex == 1) {
+                            return;
+                        }
+                        currentIndex = 1;
+                        fragmentManager.beginTransaction().replace(R.id.flont, fragmentHomePage).commit();
+                        break;
+                    case R.id.rb2:
+                        if (currentIndex == 2) {
+                            return;
+                        }
+                        currentIndex = 2;
+                        fragmentManager.beginTransaction().replace(R.id.flont, fragmentdlassify).commit();
+                        break;
+                    case R.id.rb3:
+                        if (currentIndex == 3) {
+                            return;
+                        }
+                        currentIndex = 3;
+                        fragmentManager.beginTransaction().replace(R.id.flont, fragmentfind).commit();
+                        break;
+                    case R.id.rb4:
+                        if (currentIndex == 4) {
+                            return;
+                        }
+                        currentIndex = 4;
+                        fragmentManager.beginTransaction().replace(R.id.flont, fragmentshopping).commit();
+                        break;
+                    case R.id.rb5:
+                        if (currentIndex == 5) {
+                            return;
+                        }
+                        currentIndex = 5;
+                        fragmentManager.beginTransaction().replace(R.id.flont, fragmentmine).commit();
+                        break;
+                }
+            }
+        });
+    }
+    public void one(){
         //数据
         list = new ArrayList<>();
         list.add(new FragmentHomePage());
@@ -64,7 +136,7 @@ public class showActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
-        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        mRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId){
@@ -89,7 +161,6 @@ public class showActivity extends AppCompatActivity {
             }
         });
     }
-
     //
     private void fullScreen(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -118,7 +189,18 @@ public class showActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        rg = (RadioGroup) findViewById(R.id.rg);
+//        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        mRbHomepage = (RadioButton)  findViewById(R.id.rb1);
+        mRg = (RadioGroup) findViewById(R.id.rg);
+    }
+
+    @Override
+    public int getContentLayout() {
+        return R.layout.activity_show;
+    }
+
+    @Override
+    public void inject() {
+
     }
 }

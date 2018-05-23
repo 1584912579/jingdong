@@ -72,6 +72,9 @@ public class Fragmentshopping extends BaseFragment<GetCartsPresenter> implements
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), MakeSureOrderActivity.class);
+                String[] strings = adapter.computeMoneyAndNum();
+
+                intent.putExtra("num",strings[0]);
                 startActivity(intent);
                 //把用户选中的商品传过去
                 List<SellerBean> gList = adapter.getGroupList();

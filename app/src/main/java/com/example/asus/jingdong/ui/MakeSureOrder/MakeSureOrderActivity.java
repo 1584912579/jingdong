@@ -15,6 +15,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.example.asus.jingdong.R;
 import com.example.asus.jingdong.bean.AddrsBean;
 import com.example.asus.jingdong.bean.GetCartsBean;
@@ -25,11 +29,9 @@ import com.example.asus.jingdong.ui.MakeSureOrder.adapter.MakeSureOrderAdapter;
 import com.example.asus.jingdong.ui.MakeSureOrder.contract.MakeSureOrderContract;
 import com.example.asus.jingdong.ui.MakeSureOrder.presenter.MakeSureOrderPresenter;
 import com.example.asus.jingdong.ui.base.BaseActivity;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.List;
 
 public class MakeSureOrderActivity extends BaseActivity<MakeSureOrderPresenter> implements MakeSureOrderContract.View {
@@ -53,17 +55,64 @@ public class MakeSureOrderActivity extends BaseActivity<MakeSureOrderPresenter> 
      */
     private TextView mTextSubmitOrder;
     private LinearLayout mLinearBottom;
+
+    private String uid;
+    private String token;
+    private String num;
+
+    //声明AMapLocationClient类对象
+    public AMapLocationClient mLocationClient = null;
+    //声明定位回调监听器
+    public AMapLocationListener mLocationListener = new AMapLocationListener() {
+        @Override
+        public void onLocationChanged(AMapLocation amapLocation) {
+            amapLocation.getCity();//城市信息
+            amapLocation.getDistrict();//城区信息
+            amapLocation.getStreet();//街道信息
+            amapLocation.getStreetNum();//街道门牌号信息
+        }
+    };
+    //声明AMapLocationClientOption对象
+    public AMapLocationClientOption mLocationOption = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //初始化定位
+        mLocationClient = new AMapLocationClient(getApplicationContext());
+        //设置定位回调监听
+        mLocationClient.setLocationListener(mLocationListener);
+        //初始化AMapLocationClientOption对象
+        mLocationOption = new AMapLocationClientOption();
+
+        /**
+         * 设置定位场景，目前支持三种场景（签到、出行、运动，默认无场景）
+         */
+        mLocationOption.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.SignIn);
+
+        if (null != mLocationClient) {
+            mLocationClient.setLocationOption(mLocationOption);
+            //设置场景模式后最好调用一次stop，再调用start以保证场景模式生效
+            mLocationClient.stopLocation();
+            mLocationClient.startLocation();
+        }
+        //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        //获取一次定位结果：
+        //该方法默认为false。
+        mLocationOption.setOnceLocation(true);
+        //给定位客户端对象设置定位参数
+        mLocationClient.setLocationOption(mLocationOption);
+        //启动定位
+        mLocationClient.startLocation();
+
         //初始化EventBus
         EventBus.getDefault().register(this);
         //setContentView(R.layout.activity_make_sure_order);
         initView();
 //先去获取常用收货地址列表
         SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
-        String uid = sharedPreferences.getString("uid", "-1");
-        String token = sharedPreferences.getString("token", "");
+        uid = sharedPreferences.getString("uid", "-1");
+        token = sharedPreferences.getString("token", "");
 
         if (mPresenter != null) {
             mPresenter.getAddrs(uid, token);
@@ -73,6 +122,18 @@ public class MakeSureOrderActivity extends BaseActivity<MakeSureOrderPresenter> 
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        //钱
+        Intent intent = getIntent();
+        num = intent.getStringExtra("num");
+        mTextShiFuKu.setText(num +"");
+        //跳转到订单
+        mTextSubmitOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            //    mPresenter.getcreateOrder(uid, num +"",token);
             }
         });
 
@@ -91,6 +152,7 @@ public class MakeSureOrderActivity extends BaseActivity<MakeSureOrderPresenter> 
                 }
             }
         },1000);
+
     }
 
     @Override
@@ -164,6 +226,10 @@ public class MakeSureOrderActivity extends BaseActivity<MakeSureOrderPresenter> 
 
     @Override
     public void getcreateOrderSuccess(String msg) {
-
+        Toast.makeText(MakeSureOrderActivity.this,msg,Toast.LENGTH_SHORT).show();
+        this.finish();
     }
+
+
+
 }

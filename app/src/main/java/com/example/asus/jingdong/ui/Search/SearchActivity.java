@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -40,20 +41,10 @@ public class SearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 list.clear();
                 lv.setAdapter(new myBaseAdapter(SearchActivity.this,list));
-            }
-        });
-        mtv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (et.getText().toString()==null){
 
-                }else {
-                    Intent intent = new Intent(SearchActivity.this, SearchTouActivity.class);
-                    intent.putExtra("keywords",et.getText().toString());
-                    startActivity(intent);
-                }
             }
         });
+
         initChildViews();
         jilu();
     }
@@ -104,6 +95,13 @@ public class SearchActivity extends AppCompatActivity {
                 Toast.makeText(SearchActivity.this, aa+"", Toast.LENGTH_SHORT).show();
                 list.add(aa);
                 lv.setAdapter(new myBaseAdapter(SearchActivity.this,list));
+                if (!TextUtils.isEmpty(et.getText().toString())) {
+
+
+                    Intent intent = new Intent(SearchActivity.this, SearchTouActivity.class);
+                    intent.putExtra("keywords", et.getText().toString());
+                    startActivity(intent);
+                }
             }
 
 
