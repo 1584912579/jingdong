@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -40,12 +41,14 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     private ImageView mLoginByWechat;
     private ImageView mLoginByQq;
     private Button mLogin;
+    private String ss;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_login);
         initView();
+
         //登陆
         mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,16 +108,19 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor=sharedPreferences.edit();
         editor.putString("uid", userBean.getData().getUid() + "");
-        Log.i("uuuu",userBean.getData().getUid()+"");
+      //  Log.i("uuuu",userBean.getData().getUid()+"");
         editor.putString("name", userBean.getData().getUsername() + "");
         editor.putString("iconUrl", userBean.getData().getIcon() + "");
         editor.putString("token", userBean.getData().getToken() + "");
-        Log.i("uuuu",userBean.getData().getToken()+"");
+       // Log.i("uuuu",userBean.getData().getToken()+"");
         editor.commit();
-        Intent intent = new Intent(this, showActivity.class);
-        startActivity(intent);
-        //关闭当前页面
-        this.finish();
+
+//            Intent intent = new Intent(this, showActivity.class);
+//            startActivity(intent);
+
+            //关闭当前页面
+        LoginActivity.this.finish();
+
     }
 
     private void initView() {

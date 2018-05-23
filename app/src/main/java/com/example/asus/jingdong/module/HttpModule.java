@@ -33,6 +33,8 @@ import com.example.asus.jingdong.net.SearchApi;
 import com.example.asus.jingdong.net.SearchApiService;
 import com.example.asus.jingdong.net.UpdateHeaderApi;
 import com.example.asus.jingdong.net.UpdateHeaderApiService;
+import com.example.asus.jingdong.net.UpdateNickNameApi;
+import com.example.asus.jingdong.net.UpdateNickNameApiService;
 import com.example.asus.jingdong.net.updateCartsApi;
 import com.example.asus.jingdong.net.updateCartsApiService;
 
@@ -252,5 +254,16 @@ public class HttpModule {
                 .build();
         UpdateHeaderApiService updateHeaderApiService = retrofit.create(UpdateHeaderApiService.class);
         return UpdateHeaderApi.getUpdateHeaderApi(updateHeaderApiService);
+    }
+    @Provides
+    UpdateNickNameApi provideUpdateNickNameApi(OkHttpClient.Builder builder){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASEURL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(builder.build())
+                .build();
+        UpdateNickNameApiService updateNickNameApiService = retrofit.create(UpdateNickNameApiService.class);
+        return UpdateNickNameApi.getUpdateNickNameApi(updateNickNameApiService);
     }
 }

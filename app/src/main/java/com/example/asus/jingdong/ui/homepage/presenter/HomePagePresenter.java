@@ -42,7 +42,9 @@ public class HomePagePresenter extends BasePresenter<HomPageContract.View> imple
 
                     @Override
                     public void onNext(AdBean adBean) {
-                        mView.getAdSuccess(adBean);
+                        if (mView!=null) {
+                            mView.getAdSuccess(adBean);
+                        }
                     }
 
                     @Override
@@ -70,7 +72,9 @@ public class HomePagePresenter extends BasePresenter<HomPageContract.View> imple
 
                     @Override
                     public void onNext(CatagoryBean catagoryBean) {
-                        mView.getCatagorySuccess(catagoryBean);
+                        if (mView!=null) {
+                            mView.getCatagorySuccess(catagoryBean);
+                        }
                     }
 
                     @Override

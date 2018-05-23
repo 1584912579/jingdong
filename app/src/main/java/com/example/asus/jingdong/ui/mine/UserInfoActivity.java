@@ -13,12 +13,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -60,6 +62,8 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
     private LinearLayout ll;
     private String uid;
     private Bitmap photo;
+    private EditText nc;
+    private TextView xg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +103,18 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
         ll = (LinearLayout) findViewById(R.id.ll);
         mBt = (Button) findViewById(R.id.bt);
         mBt.setOnClickListener(this);
+        nc = (EditText) findViewById(R.id.nc);
+        xg = (TextView) findViewById(R.id.xg);
+        xg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nickname = nc.getText().toString();
+                //String token = sharedPreferences.getString("token", "");
+                if (!TextUtils.isEmpty(nickname)){
+                    mPresenter.updateNickName(uid,nickname);
+                }
+            }
+        });
     }
 
     @Override
@@ -111,9 +127,10 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
                 //清空SharedPreferences
                 sharedPreferences.edit().clear().commit();
                 //回到登录页面
-                Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+//                Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                startActivity(intent);
+
                 UserInfoActivity.this.finish();
                 break;
             case R.id.iv:
@@ -145,9 +162,21 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
                     pop.dismiss();
                 }
                 //调用相机，需要隐式意图
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
-                startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
+                    startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
+                }else {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
+                    startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
+                }
+//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
+//                startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
             }
         });
         //去相册
@@ -175,12 +204,7 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
             }
         });
     }
-    //拍照
-    private void takePhoto() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
-        startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
-    }
+
 
 //    回调方法
     @Override
@@ -192,6 +216,7 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
                 crop(imageFileUri);
                 break;
             case PHOTO_REQUEST_CUT:
+                try {
                 //截图图片成功
                 Bundle bundle = data.getExtras();
                 if (bundle!=null){
@@ -202,21 +227,18 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
                     if (file.exists()) {
                         file.delete();
                     }
-
-                    FileOutputStream fos = null;
-                    try {
-                        //创建出新的文件
-                        file.createNewFile();
-                        fos = new FileOutputStream(file);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    //创建出新的文件
+                    file.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(file);
 
                     //把裁剪后的图片保存到本地
                     photo.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                     //上传头像
                    mPresenter.updateHeader(uid, imgPath);
 
+                }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
             case PHOTO_REQUEST_GALLERY:
@@ -265,5 +287,11 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
             mIv.setImageBitmap(photo);
 
         }
+    }
+
+    @Override
+    public void updateNickNameSuccess(String msg) {
+        Toast.makeText(UserInfoActivity.this,msg,Toast.LENGTH_SHORT).show();
+        nc.setText("");
     }
 }

@@ -92,6 +92,7 @@ public class ListDetailsActivity extends BaseActivity<DetailsPresenter> implemen
         if ("-1".equals(uid)){
             //跳转到登陆页面表示没登录
             Intent intent = new Intent(ListDetailsActivity.this, LoginActivity.class);
+
             startActivity(intent);
 
         }else {

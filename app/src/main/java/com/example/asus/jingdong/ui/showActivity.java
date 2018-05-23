@@ -42,6 +42,7 @@ public class showActivity extends BaseActivity {
     private Fragmentfind fragmentfind;
     private Fragmentshopping fragmentshopping;
     private Fragmentmine fragmentmine;
+    private RadioButton rb5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,7 @@ public class showActivity extends BaseActivity {
         mRbHomepage.setChecked(true);
         //设置点击事件
         setLisenter();
+//        rb5.performClick();
 
 
     }
@@ -192,6 +194,7 @@ public class showActivity extends BaseActivity {
 //        viewPager = (ViewPager) findViewById(R.id.viewpager);
         mRbHomepage = (RadioButton)  findViewById(R.id.rb1);
         mRg = (RadioGroup) findViewById(R.id.rg);
+        rb5 = (RadioButton) findViewById(R.id.rb5);
     }
 
     @Override

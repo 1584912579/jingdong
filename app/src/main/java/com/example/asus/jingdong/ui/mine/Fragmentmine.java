@@ -98,9 +98,14 @@ public class Fragmentmine extends BaseFragment {
         }
         if (!TextUtils.isEmpty(iconUrl)) {
             Glide.with(getContext()).load(iconUrl).into(my_user_icon);
+        }else {
+            //@drawable/user
+            my_user_icon.setImageResource(R.drawable.user);
         }
         if (!TextUtils.isEmpty(name)) {
             my_user_name.setText(name);
+        }else {
+            my_user_name.setText("登录/注册 >");
         }
         my_linear_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,6 +113,7 @@ public class Fragmentmine extends BaseFragment {
                 if (TextUtils.isEmpty(uid)) {
                     //未登录
                     Intent intent = new Intent(getContext(), LoginActivity.class);
+
                     startActivity(intent);
                 } else {
                     //已登录

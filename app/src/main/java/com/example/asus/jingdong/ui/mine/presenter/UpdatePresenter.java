@@ -2,6 +2,7 @@ package com.example.asus.jingdong.ui.mine.presenter;
 
 import com.example.asus.jingdong.bean.BaseBean;
 import com.example.asus.jingdong.net.UpdateHeaderApi;
+import com.example.asus.jingdong.net.UpdateNickNameApi;
 import com.example.asus.jingdong.ui.base.BasePresenter;
 import com.example.asus.jingdong.ui.mine.contract.UpdateHeaderContract;
 
@@ -23,9 +24,11 @@ import okhttp3.RequestBody;
 
 public class UpdatePresenter extends BasePresenter<UpdateHeaderContract.View> implements UpdateHeaderContract.Presenter  {
     private UpdateHeaderApi updateHeaderApi;
+    private UpdateNickNameApi updateNickNameApi;
     @Inject
-    public UpdatePresenter(UpdateHeaderApi updateHeaderApi) {
+    public UpdatePresenter(UpdateHeaderApi updateHeaderApi,UpdateNickNameApi updateNickNameApi) {
         this.updateHeaderApi = updateHeaderApi;
+        this.updateNickNameApi = updateNickNameApi;
     }
 
     @Override
@@ -50,6 +53,27 @@ public class UpdatePresenter extends BasePresenter<UpdateHeaderContract.View> im
             public void accept(String s) throws Exception {
                 if (mView!=null){
                     mView.updateSuccess(s);
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public void updateNickName(String uid, String nickname) {
+        updateNickNameApi.getUpdateNickNameApi(uid,nickname)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Function<BaseBean, String>() {
+                    @Override
+                    public String apply(BaseBean baseBean) throws Exception {
+                        return baseBean.getMsg();
+                    }
+                }).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                if (mView!=null){
+                    mView.updateNickNameSuccess(s);
                 }
             }
         });
