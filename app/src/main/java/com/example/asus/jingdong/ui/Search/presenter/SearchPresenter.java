@@ -37,7 +37,10 @@ public class SearchPresenter extends BasePresenter<SearchContract.View> implemen
 
                     @Override
                     public void onNext(ProductsBean productsBean) {
-                        mView.getProductsSuccess(productsBean);
+                        if (mView!=null){
+                            mView.getProductsSuccess(productsBean);
+                        }
+
                     }
 
                     @Override

@@ -2,7 +2,10 @@ package com.example.asus.jingdong.ui.SpLb;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.example.asus.jingdong.R;
 import com.example.asus.jingdong.bean.ProductsBean;
@@ -29,6 +32,11 @@ public class ListActivity extends BaseActivity<ListPresenter> implements ListCon
     private int pscid;
     private XrvListAdapter adapter;
     private boolean isRefresh = true;
+    private ImageView iii;
+    private int pp=1;
+    private GridLayoutManager gridLayoutManager;
+    private ImageView lift;
+
     @Override
     public int getContentLayout() {
         return R.layout.activity_list;
@@ -46,10 +54,40 @@ public class ListActivity extends BaseActivity<ListPresenter> implements ListCon
         super.onCreate(savedInstanceState);
         // setContentView(R.layout.activity_list);
         mXrv = (XRecyclerView) findViewById(R.id.xrv);
+        iii = (ImageView) findViewById(R.id.iii);
+        lift = (ImageView) findViewById(R.id.lift);
+        lift.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ListActivity.this.finish();
+            }
+        });
         //获取pscid
         Intent intent = getIntent();
         pscid = intent.getIntExtra("pscid", 0);
         mPresenter.getPresenter(pscid+"");
+        iii.setImageResource(R.drawable.aa);
+        gridLayoutManager= new GridLayoutManager(ListActivity.this, pp);
+        iii.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pp==1){
+
+                    adapter.setType(1);
+                    iii.setImageResource(R.drawable.aa);
+                    pp=2;
+                    gridLayoutManager= new GridLayoutManager(ListActivity.this, 1);
+                    mXrv.setLayoutManager(gridLayoutManager);
+                }else {
+                    pp=1;
+                    adapter.setType(2);
+                    iii.setImageResource(R.drawable.a);
+                    gridLayoutManager= new GridLayoutManager(ListActivity.this, 2);
+                    mXrv.setLayoutManager(gridLayoutManager);
+                }
+
+            }
+        });
     }
 
 
@@ -58,9 +96,12 @@ public class ListActivity extends BaseActivity<ListPresenter> implements ListCon
     public void getProductsSuccess(final ProductsBean productsBean) {
         //设置布局管理器
         // LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 
-        mXrv.setLayoutManager(linearLayoutManager);
+
+
+        mXrv.setLayoutManager(gridLayoutManager);
+
         final List<ProductsBean.DataBean> list=productsBean.getData();
         final List<ProductsBean.DataBean> tempList = new ArrayList<>();
         tempList.addAll(list);

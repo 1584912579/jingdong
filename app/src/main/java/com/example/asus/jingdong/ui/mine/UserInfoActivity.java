@@ -56,15 +56,18 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
     private EditText nc;
     private TextView xg;
     private File file;
+    private File imgFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_user_info);
-        imgPath = getExternalCacheDir().getPath() + "/header.jpg";
-        imgCropPath = getExternalCacheDir().getPath() + "/header_crop.jpg";
-        file = new File(imgPath);
-        imageFileUri = Uri.fromFile(file);
+        imgPath = getExternalCacheDir() + File.separator + "header.jpg";
+        imgFile = new File(imgPath);
+//        imgPath = getExternalCacheDir().getPath() + "/header.jpg";
+//        imgCropPath = getExternalCacheDir().getPath() + "/header_crop.jpg";
+//        file = new File(imgPath);
+//        imageFileUri = Uri.fromFile(file);
         initView();
 
 
@@ -156,7 +159,7 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
 
                 //调用相机，需要隐式意图
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imgFile));
                 startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
             }
         });
@@ -193,34 +196,19 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
             case PHOTO_REQUEST_TAKEPHOTO:
                 if (resultCode == Activity.RESULT_OK) {
                     //截图
-                    crop(imageFileUri);
+                    crop(Uri.fromFile(imgFile));
                 }
                 break;
             case PHOTO_REQUEST_CUT:
-                try {
                 //截图图片成功
                 Bundle bundle = data.getExtras();
-                if (bundle!=null){
+                if (bundle != null) {
                     photo = bundle.getParcelable("data");
-
-                    File file = new File(imgCropPath);
-                    //判断该文件创建
-                    if (file.exists()) {
-                        file.delete();
-                    }
-                    //创建出新的文件
-                    file.createNewFile();
-                    FileOutputStream fos = new FileOutputStream(file);
-
-                    //把裁剪后的图片保存到本地
-                    photo.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                     //上传头像
-                   mPresenter.updateHeader(uid, imgPath);
+                    mPresenter.updateHeader(uid, imgPath);
 
                 }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
                 break;
             case PHOTO_REQUEST_GALLERY:
                     crop(data.getData());
@@ -245,7 +233,7 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
         intent.putExtra("outputX", 300);
         intent.putExtra("outputY", 300);
         //设置取消人脸识别
-        intent.putExtra("noFaceDetection", false);
+        intent.putExtra("noFaceDetection", true);
         //设置返回数据
         intent.putExtra("return-data", true);
         //

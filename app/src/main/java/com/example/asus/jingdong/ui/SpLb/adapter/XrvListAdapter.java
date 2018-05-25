@@ -25,8 +25,9 @@ public class XrvListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Context context;
     private List<ProductsBean.DataBean> list;
     private LayoutInflater inflater;
-
+    private int type=1;
     private OnListItemClickListener onListItemClickListener;
+
 
     public interface OnListItemClickListener {
         void OnItemClick( int position);
@@ -41,12 +42,29 @@ public class XrvListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void setOnListItemClickListener(OnListItemClickListener onListItemClickListener) {
         this.onListItemClickListener = onListItemClickListener;
     }
+    //点击切换布局的时候通过这个方法设置type
+    public void setType(int type) {
+        this.type = type;
+        notifyDataSetChanged();
+    }
 
+    @Override
+//用来获取当前项Item是哪种类型的布局
+    public int getItemViewType(int position) {
+        return type;
+    }
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.rvlist_item, parent, false);
-        XlvViewHolder xlvViewHolder = new XlvViewHolder(view);
+        XlvViewHolder xlvViewHolder;
+        if (viewType == 1) {
+            View view = inflater.inflate(R.layout.rvlist_item, parent, false);
+            xlvViewHolder = new XlvViewHolder(view);
+        }else {
+            View view = inflater.inflate(R.layout.rvlist_item2, parent, false);
+            xlvViewHolder = new XlvViewHolder(view);
+        }
+        //rvrecommend_item
         return xlvViewHolder;
     }
 

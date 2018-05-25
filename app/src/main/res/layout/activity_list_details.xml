@@ -12,6 +12,7 @@
         android:background="#33000000">
 
         <ImageView
+            android:id="@+id/lift2"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_centerVertical="true"

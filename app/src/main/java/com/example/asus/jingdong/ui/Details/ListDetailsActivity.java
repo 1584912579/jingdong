@@ -42,6 +42,7 @@ public class ListDetailsActivity extends BaseActivity<DetailsPresenter> implemen
     private TextView mTvShopCard;
     private TextView mTvAddCard;
     private DatailsBean.DataBean data;
+    private ImageView mlift;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,12 +118,19 @@ public class ListDetailsActivity extends BaseActivity<DetailsPresenter> implemen
     }
     private void initView() {
         mIvShare = (ImageView) findViewById(R.id.ivShare);
+        mlift = (ImageView) findViewById(R.id.lift2);
         mBanner = (Banner) findViewById(R.id.banner);
         mTvTitle = (TextView) findViewById(R.id.tvTitle);
         mTvPrice = (TextView) findViewById(R.id.tvPrice);
         mTvVipPrice = (TextView) findViewById(R.id.tvVipPrice);
         mTvShopCard = (TextView) findViewById(R.id.tvShopCard);
         mTvAddCard = (TextView) findViewById(R.id.tvAddCard);
+        mlift.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ListDetailsActivity.this.finish();
+            }
+        });
     }
     @Override
     public void onStop() {
