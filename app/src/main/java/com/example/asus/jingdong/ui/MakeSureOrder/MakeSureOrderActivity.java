@@ -108,7 +108,12 @@ public class MakeSureOrderActivity extends BaseActivity<MakeSureOrderPresenter> 
         //初始化EventBus
         EventBus.getDefault().register(this);
         //setContentView(R.layout.activity_make_sure_order);
+        // 钱
+        Intent intent = getIntent();
+        num = intent.getStringExtra("num");
+
         initView();
+        mTextShiFuKu.setText(num +"");
 //先去获取常用收货地址列表
         SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
         uid = sharedPreferences.getString("uid", "-1");
@@ -125,17 +130,8 @@ public class MakeSureOrderActivity extends BaseActivity<MakeSureOrderPresenter> 
             }
         });
 
-        //钱
-        Intent intent = getIntent();
-        num = intent.getStringExtra("num");
-        mTextShiFuKu.setText(num +"");
-        //跳转到订单
-        mTextSubmitOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            //    mPresenter.getcreateOrder(uid, num +"",token);
-            }
-        });
+
+
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN,sticky  = true)
@@ -174,6 +170,13 @@ public class MakeSureOrderActivity extends BaseActivity<MakeSureOrderPresenter> 
         mTextShiFuKu = (TextView) findViewById(R.id.text_shi_fu_ku);
         mTextSubmitOrder = (TextView) findViewById(R.id.text_submit_order);
         mLinearBottom = (LinearLayout) findViewById(R.id.linear_bottom);
+        //跳转到订单
+        mTextSubmitOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.getcreateOrder(uid, num );
+            }
+        });
     }
     @Override
     public int getContentLayout() {

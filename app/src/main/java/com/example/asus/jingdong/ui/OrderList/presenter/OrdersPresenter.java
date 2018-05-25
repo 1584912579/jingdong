@@ -2,7 +2,6 @@ package com.example.asus.jingdong.ui.OrderList.presenter;
 
 
 import com.example.asus.jingdong.bean.BaseBean;
-import com.example.asus.jingdong.bean.GetCartsBean;
 import com.example.asus.jingdong.bean.GetOrdersBean;
 import com.example.asus.jingdong.net.GetOrdersApi;
 import com.example.asus.jingdong.ui.OrderList.contract.OrdersContract;

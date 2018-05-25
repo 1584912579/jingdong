@@ -14,7 +14,6 @@ import retrofit2.http.POST;
 public interface CreateOrderApiService {
     @FormUrlEncoded
     @POST("product/createOrder")
-    Observable<BaseBean> createOrder(@Field("Uid") String uid,
-                                     @Field("Price") String price,
-                                     @Field("Token") String token);
+        Observable<BaseBean> createOrder(@Field("Uid") String  uid,
+                                     @Field("Price") String price);
 }

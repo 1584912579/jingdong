@@ -51,8 +51,8 @@ public class MakeSureOrderPresenter extends BasePresenter<MakeSureOrderContract.
     }
 
     @Override
-    public void getcreateOrder(String uid, String price, String token) {
-        createOrderApi.GetCreateOrderApi(uid, price, token)
+    public void getcreateOrder(String uid, String price ) {
+        createOrderApi.GetCreateOrderApi(uid, price)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(new Function<BaseBean, String>() {

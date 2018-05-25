@@ -1,7 +1,6 @@
 package com.example.asus.jingdong.net;
 
 import com.example.asus.jingdong.bean.BaseBean;
-import com.example.asus.jingdong.bean.GetOrdersBean;
 
 import io.reactivex.Observable;
 
@@ -24,7 +23,7 @@ public class CreateOrderApi {
         return createOrderApi;
     }
 
-    public Observable<BaseBean> GetCreateOrderApi(String uid, String Price , String token) {
-        return createOrderApiService.createOrder(uid,Price,token);
+    public Observable<BaseBean> GetCreateOrderApi(String uid, String price ) {
+        return createOrderApiService.createOrder(uid,price);
     }
 }

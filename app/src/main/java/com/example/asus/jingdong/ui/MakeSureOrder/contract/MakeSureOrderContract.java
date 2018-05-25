@@ -19,6 +19,6 @@ public interface MakeSureOrderContract {
     interface Presenter extends BaseContract.BasePresenter<View> {
         void getAddrs(String uid, String token);
 
-        void getcreateOrder(String uid, String price, String token);
+        void getcreateOrder(String uid, String price );
     }
 }

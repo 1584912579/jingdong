@@ -88,13 +88,13 @@ public class FragmentAllOrder extends BaseFragment<OrdersPresenter> implements O
 
     @Override
     public void showOrders(List<GetOrdersBean.DataBean> list) {
-        if (list == null || list.size() == 0) {
-            relative_empty_order.setVisibility(View.VISIBLE);
-            smartRefreshLayout.setVisibility(View.GONE);
-            return;
-        }
-        smartRefreshLayout.setVisibility(View.VISIBLE);
-        relative_empty_order.setVisibility(View.GONE);
+//        if (list == null || list.size() == 0) {
+//            relative_empty_order.setVisibility(View.VISIBLE);
+//            smartRefreshLayout.setVisibility(View.GONE);
+//            return;
+//        }
+//        smartRefreshLayout.setVisibility(View.VISIBLE);
+//        relative_empty_order.setVisibility(View.GONE);
         if (isRefresh) {
             if (adapter != null) {
                 adapter.refresh(list);
