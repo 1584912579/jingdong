@@ -1,5 +1,6 @@
 package com.example.asus.jingdong.net;
 
+import com.example.asus.jingdong.bean.BaseBean;
 import com.example.asus.jingdong.bean.GetOrdersBean;
 
 import io.reactivex.Observable;
@@ -14,7 +15,13 @@ import retrofit2.http.POST;
 public interface GetOrdersApiService {
     @FormUrlEncoded
     @POST("product/getOrders")
-    Observable<GetOrdersBean> getGetOrders(@Field("uid") String uid,
-                                           @Field("page") String page,
-                                           @Field("token") String token);
+    Observable<GetOrdersBean> getGetOrders(@Field("Uid") String uid,
+                                           @Field("Page") String page,
+                                           @Field("Token") String token);
+    @FormUrlEncoded
+    @POST("product/updateOrder")
+    Observable<BaseBean> updateOrder(@Field("uid") String uid,
+                                     @Field("status") String status,
+                                     @Field("orderId") String orderId,
+                                     @Field("token") String token);
 }

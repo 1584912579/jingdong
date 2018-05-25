@@ -5,20 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -31,14 +25,11 @@ import com.bumptech.glide.Glide;
 import com.example.asus.jingdong.R;
 import com.example.asus.jingdong.component.DaggerHttpComponent;
 import com.example.asus.jingdong.ui.base.BaseActivity;
-import com.example.asus.jingdong.ui.login.LoginActivity;
 import com.example.asus.jingdong.ui.mine.contract.UpdateHeaderContract;
 import com.example.asus.jingdong.ui.mine.presenter.UpdatePresenter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements View.OnClickListener, UpdateHeaderContract.View  {
 
@@ -64,6 +55,7 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
     private Bitmap photo;
     private EditText nc;
     private TextView xg;
+    private File file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +63,7 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
 //        setContentView(R.layout.activity_user_info);
         imgPath = getExternalCacheDir().getPath() + "/header.jpg";
         imgCropPath = getExternalCacheDir().getPath() + "/header_crop.jpg";
-        File file = new File(imgPath);
+        file = new File(imgPath);
         imageFileUri = Uri.fromFile(file);
         initView();
 
@@ -161,22 +153,11 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
                 if (pop != null && pop.isShowing()) {
                     pop.dismiss();
                 }
-                //调用相机，需要隐式意图
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
-                    startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
-                }else {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
-                    startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
-                }
-//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
-//                startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
+                //调用相机，需要隐式意图
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
+                startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
             }
         });
         //去相册
@@ -187,13 +168,11 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
                 if (pop != null && pop.isShowing()) {
                     pop.dismiss();
                 }
-                Intent intent = new Intent();
-                //指定选择/获取的动作...PICK获取,拿
-                intent.setAction(Intent.ACTION_PICK);
-                //指定获取的数据的类型
-                intent.setType("image/*");
+                Intent pickIntent = new Intent(Intent.ACTION_PICK, null);
+                // 如果限制上传到服务器的图片类型时可以直接写如："image/jpeg 、 image/png等的类型"
+                pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                startActivityForResult(pickIntent, PHOTO_REQUEST_GALLERY);
 
-                startActivityForResult(intent,  PHOTO_REQUEST_GALLERY);
             }
         });
         bt3.setOnClickListener(new View.OnClickListener() {
@@ -212,8 +191,10 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case PHOTO_REQUEST_TAKEPHOTO:
-                //截图
-                crop(imageFileUri);
+                if (resultCode == Activity.RESULT_OK) {
+                    //截图
+                    crop(imageFileUri);
+                }
                 break;
             case PHOTO_REQUEST_CUT:
                 try {
@@ -242,8 +223,7 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
                 }
                 break;
             case PHOTO_REQUEST_GALLERY:
-                Uri uri = data.getData();
-                crop(uri);
+                    crop(data.getData());
                 break;
 
         }
@@ -254,25 +234,20 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
 
         //指定裁剪的动作
         intent.setAction("com.android.camera.action.CROP");
-
         //设置裁剪的数据(uri路径)....裁剪的类型(image/*)
         intent.setDataAndType(uri, "image/*");
-
         //执行裁剪的指令
         intent.putExtra("crop", "true");
         //指定裁剪框的宽高比
         intent.putExtra("aspectX", 1);
         intent.putExtra("aspectY", 1);
-
         //指定输出的时候宽度和高度
         intent.putExtra("outputX", 300);
         intent.putExtra("outputY", 300);
-
         //设置取消人脸识别
         intent.putExtra("noFaceDetection", false);
         //设置返回数据
         intent.putExtra("return-data", true);
-
         //
         startActivityForResult(intent, PHOTO_REQUEST_CUT);
     }
@@ -294,4 +269,6 @@ public class UserInfoActivity extends BaseActivity<UpdatePresenter> implements V
         Toast.makeText(UserInfoActivity.this,msg,Toast.LENGTH_SHORT).show();
         nc.setText("");
     }
+
+
 }

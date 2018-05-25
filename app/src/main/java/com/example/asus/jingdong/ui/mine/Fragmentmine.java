@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.asus.jingdong.R;
+import com.example.asus.jingdong.ui.OrderList.OrderListActivity;
 import com.example.asus.jingdong.ui.base.BaseFragment;
 import com.example.asus.jingdong.ui.login.LoginActivity;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -78,6 +79,14 @@ public class Fragmentmine extends BaseFragment {
         fragment_my_scroll = view.findViewById(R.id.fragment_my_scroll);
         login_back_pic = view.findViewById(R.id.login_back_pic);
         smart_refresh = view.findViewById(R.id.smart_refresh);
+        //跳转到订单页面
+        my_order_dfk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), OrderListActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
     @Override

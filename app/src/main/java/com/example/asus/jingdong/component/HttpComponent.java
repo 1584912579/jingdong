@@ -4,6 +4,10 @@ import com.example.asus.jingdong.module.HttpModule;
 import com.example.asus.jingdong.ui.Details.ListDetailsActivity;
 import com.example.asus.jingdong.ui.MakeSureOrder.AddNewAddrActivity;
 import com.example.asus.jingdong.ui.MakeSureOrder.MakeSureOrderActivity;
+import com.example.asus.jingdong.ui.OrderList.fragment.FragmentAllOrder;
+import com.example.asus.jingdong.ui.OrderList.fragment.FragmentWaitOrder;
+import com.example.asus.jingdong.ui.OrderList.fragment.Fragmentcanc;
+import com.example.asus.jingdong.ui.OrderList.fragment.Fragmentpaid;
 import com.example.asus.jingdong.ui.Search.SearchTouActivity;
 import com.example.asus.jingdong.ui.ShopCart.ShopCartActivity;
 import com.example.asus.jingdong.ui.SpLb.ListActivity;
@@ -35,4 +39,8 @@ public interface HttpComponent {
     void inject(MakeSureOrderActivity makeSureOrderActivity);
     void inject(AddNewAddrActivity addNewAddrActivity);
     void inject(UserInfoActivity userInfoActivity);
+    void inject(FragmentAllOrder fragmentAllOrder);
+    void inject(FragmentWaitOrder fragmentWaitOrder);
+    void inject(Fragmentpaid fragmentpaid);
+    void inject(Fragmentcanc fragmentcanc);
 }

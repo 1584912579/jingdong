@@ -1,5 +1,6 @@
 package com.example.asus.jingdong.net;
 
+import com.example.asus.jingdong.bean.BaseBean;
 import com.example.asus.jingdong.bean.GetCartsBean;
 import com.example.asus.jingdong.bean.GetOrdersBean;
 
@@ -26,5 +27,8 @@ public class GetOrdersApi {
 
     public Observable<GetOrdersBean> GetOrdersApi(String uid, String page , String token) {
         return getOrdersApiService.getGetOrders(uid,page,token);
+    }
+    public Observable<BaseBean> updateOrder(String uid, String status, String orderId, String token) {
+        return getOrdersApiService.updateOrder(uid, status, orderId, token);
     }
 }
